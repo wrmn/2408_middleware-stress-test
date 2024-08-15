@@ -9,6 +9,7 @@ var (
 	HOST            *string
 	PORT            *string
 	ACT             *string
+	MODE            *string
 	test            = false
 	Run             = &test
 	Success, Failed int
@@ -23,10 +24,10 @@ func IsRun() {
 	var cur bool
 	Run = &cur
 	for !*Run {
-		cur = time.Now().Second()%5 == 0
+		cur = time.Now().Second()%2 == 0
 		if cur {
 			Run = &cur
 		}
-		time.Sleep(250 * time.Millisecond)
+		time.Sleep(250 * time.Microsecond)
 	}
 }

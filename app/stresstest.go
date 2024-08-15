@@ -10,11 +10,14 @@ import (
 	"time"
 )
 
-func Hit(wg *sync.WaitGroup, i int) {
+func hit(wg *sync.WaitGroup, c chan struct{}, i int) {
 	defer wg.Done()
-
-	for !*global.Run {
-		time.Sleep(1 * time.Millisecond)
+	if *global.MODE == "time" {
+		for !*global.Run {
+			time.Sleep(1 * time.Millisecond)
+		}
+	} else {
+		<-c
 	}
 	msg, tid := utility.GetSampleLogon()
 	_, err := connections.SendTCPRequest(msg)
@@ -26,4 +29,11 @@ func Hit(wg *sync.WaitGroup, i int) {
 	}
 	fmt.Printf("[v] iteration %s : Success [tid : %s]\n", utility.PadLeft(3, ' ', strconv.Itoa(i)), tid)
 	global.Success++
+}
+
+func HitIteration(wg *sync.WaitGroup, c chan struct{}) {
+	for i := 0; i < *global.ITERATION; i++ {
+		wg.Add(1)
+		go hit(wg, c, i)
+	}
 }

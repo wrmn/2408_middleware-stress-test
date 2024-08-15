@@ -15,20 +15,32 @@ func main() {
 	global.ACT = flag.String("test", "", "test case")
 	global.ITERATION = flag.Int("i", 0, "iteration")
 	global.HOST = flag.String("h", "", "target host")
+	global.MODE = flag.String("m", "chan", "hit mode")
 	global.PORT = flag.String("p", "443", "tagret port")
 
 	flag.Parse()
 
 	switch *global.ACT {
 	case "tcp":
-		go global.IsRun()
-		for i := 0; i < *global.ITERATION; i++ {
-			wg.Add(1)
-			go app.Hit(&wg, i)
+		c := make(chan struct{})
+		if *global.MODE == "time" {
+			go global.IsRun()
 		}
-		for !*global.Run {
-			time.Sleep(1 * time.Millisecond)
+
+		app.HitIteration(&wg, c)
+
+		switch *global.MODE {
+		case "time":
+			for !*global.Run {
+				time.Sleep(1 * time.Nanosecond)
+			}
+		case "chan":
+			time.Sleep(1 * time.Second)
+			close(c)
+		default:
+			log.Fatal("invalid command")
 		}
+
 		cur := time.Now()
 		wg.Wait()
 		fmt.Printf("Success %d, Failed %d \n", global.Success, global.Failed)
