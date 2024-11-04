@@ -7,28 +7,27 @@ import (
 	"time"
 )
 
-func SendTCPRequest(message []byte) (string, error) {
+func SendTCPRequest(message []byte) ([]byte, error) {
 	host := fmt.Sprintf("%s:%s", *global.HOST, *global.PORT)
 	conn, err := net.Dial("tcp", host)
 	if err != nil {
-		return "", fmt.Errorf("failed to connect: %w", err)
+		return []byte{}, fmt.Errorf("failed to connect: %w", err)
 	}
 	defer conn.Close()
 
 	_, err = conn.Write(message)
 	if err != nil {
-		return "", fmt.Errorf("failed to send message: %w", err)
+		return []byte{}, fmt.Errorf("failed to send message: %w", err)
 	}
 
 	conn.SetReadDeadline(time.Now().Add(5 * time.Second))
 
 	buffer := make([]byte, 1024)
 
-	n, err := conn.Read(buffer)
+	_, err = conn.Read(buffer)
 	if err != nil {
-		return "", fmt.Errorf("failed to read response: %w", err)
+		return []byte{}, fmt.Errorf("failed to read response: %w", err)
 	}
 
-	response := string(buffer[:n])
-	return response, nil
+	return buffer[2:4], nil
 }

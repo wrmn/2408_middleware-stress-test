@@ -5,14 +5,14 @@ import (
 )
 
 var (
-	ITERATION       *int
-	HOST            *string
-	PORT            *string
-	ACT             *string
-	MODE            *string
-	test            = false
-	Run             = &test
-	Success, Failed int
+	ITERATION                *int
+	HOST                     *string
+	PORT                     *string
+	ACT                      *string
+	MODE                     *string
+	test                     = false
+	Run                      = &test
+	Success, Failed, Invalid int
 )
 
 var DataLogon = []byte{

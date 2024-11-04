@@ -19,7 +19,7 @@ func main() {
 	global.PORT = flag.String("p", "443", "tagret port")
 
 	flag.Parse()
-
+	fmt.Println(*global.ACT)
 	switch *global.ACT {
 	case "tcp":
 		c := make(chan struct{})
@@ -38,12 +38,12 @@ func main() {
 			time.Sleep(1 * time.Second)
 			close(c)
 		default:
-			log.Fatal("invalid command")
+			log.Fatal("invalid command 2")
 		}
 
 		cur := time.Now()
 		wg.Wait()
-		fmt.Printf("Success %d, Failed %d \n", global.Success, global.Failed)
+		fmt.Printf("Success %d, Failed %d, Invalid response %d \n", global.Success, global.Failed, global.Invalid)
 		fmt.Printf("Time spend : %d ms ", time.Since(cur).Milliseconds())
 	case "itr":
 		go global.IsRun()
